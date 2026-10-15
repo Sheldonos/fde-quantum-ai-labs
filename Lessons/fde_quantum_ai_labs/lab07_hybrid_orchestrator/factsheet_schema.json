@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "watsonx.governance AI and Quantum Experiment Factsheet",
+  "type": "object",
+  "required": [
+    "factsheet_version",
+    "request_id",
+    "timestamp",
+    "lifecycle_phase",
+    "audit_payload",
+    "compliance_status"
+  ],
+  "properties": {
+    "factsheet_version": {
+      "type": "string",
+      "enum": ["2.4.0"]
+    },
+    "request_id": {
+      "type": "string",
+      "pattern": "^REQ-[A-Z0-9]{8}$"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "lifecycle_phase": {
+      "type": "string",
+      "enum": [
+        "ALGORITHM_SELECTION",
+        "CIRCUIT_SYNTHESIS",
+        "FINOPS_APPROVAL",
+        "EXECUTION_COMPLETE"
+      ]
+    },
+    "audit_payload": {
+      "type": "object"
+    },
+    "compliance_status": {
+      "type": "string",
+      "enum": ["VERIFIED_COMPLIANT", "FLAGGED_REVIEW", "REJECTED"]
+    }
+  }
+}

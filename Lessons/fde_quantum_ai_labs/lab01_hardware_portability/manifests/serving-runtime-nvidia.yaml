@@ -1,0 +1,41 @@
+apiVersion: serving.kserve.io/v1alpha1
+kind: ServingRuntime
+metadata:
+  name: vllm-cuda-runtime
+  namespace: llm-hosting
+  labels:
+    opendatahub.io/dashboard: "true"
+spec:
+  annotations:
+    opendatahub.io/accelerator-name: "nvidia-gpu"
+    opendatahub.io/apiProtocol: "REST"
+    opendatahub.io/recommended-accelerators: '["nvidia.com/gpu"]'
+  containers:
+    - name: kserve-container
+      image: quay.io/modh/vllm:rhoai-2.14-cuda
+      command: ["python3", "-m", "vllm.entrypoints.openai.api_server"]
+      args:
+        - "--model=/mnt/models"
+        - "--port=8080"
+        - "--gpu-memory-utilization=0.90"
+        - "--max-model-len=4096"
+        - "--tensor-parallel-size=1"
+        - "--dtype=bfloat16"
+        - "--enforce-eager"
+      ports:
+        - containerPort: 8080
+          protocol: TCP
+      resources:
+        limits:
+          cpu: "8"
+          memory: 32Gi
+          nvidia.com/gpu: "1"
+        requests:
+          cpu: "4"
+          memory: 16Gi
+          nvidia.com/gpu: "1"
+  multiModel: false
+  supportedModelFormats:
+    - name: vLLM
+      version: "1"
+      autoSelect: true

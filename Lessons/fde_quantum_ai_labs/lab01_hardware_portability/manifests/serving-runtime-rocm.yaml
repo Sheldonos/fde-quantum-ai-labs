@@ -1,0 +1,45 @@
+apiVersion: serving.kserve.io/v1alpha1
+kind: ServingRuntime
+metadata:
+  name: vllm-rocm-runtime
+  namespace: llm-hosting
+  labels:
+    opendatahub.io/dashboard: "true"
+spec:
+  annotations:
+    opendatahub.io/accelerator-name: "amd-gpu"
+    opendatahub.io/apiProtocol: "REST"
+    opendatahub.io/recommended-accelerators: '["amd.com/gpu"]'
+  containers:
+    - name: kserve-container
+      image: quay.io/modh/vllm:rhoai-2.14-rocm
+      command: ["python3", "-m", "vllm.entrypoints.openai.api_server"]
+      args:
+        - "--model=/mnt/models"
+        - "--port=8080"
+        - "--gpu-memory-utilization=0.90"
+        - "--max-model-len=4096"
+        - "--tensor-parallel-size=1"
+        - "--dtype=bfloat16"
+      env:
+        - name: ROCM_PATH
+          value: "/opt/rocm"
+        - name: HIP_VISIBLE_DEVICES
+          value: "0"
+      ports:
+        - containerPort: 8080
+          protocol: TCP
+      resources:
+        limits:
+          cpu: "8"
+          memory: 32Gi
+          amd.com/gpu: "1"
+        requests:
+          cpu: "4"
+          memory: 16Gi
+          amd.com/gpu: "1"
+  multiModel: false
+  supportedModelFormats:
+    - name: vLLM
+      version: "1"
+      autoSelect: true

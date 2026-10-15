@@ -1,0 +1,6 @@
+qiskit>=1.0.0
+qiskit-aer>=0.14.0
+numpy>=1.24.0
+scipy>=1.10.0
+networkx>=3.0
+rich>=13.0.0

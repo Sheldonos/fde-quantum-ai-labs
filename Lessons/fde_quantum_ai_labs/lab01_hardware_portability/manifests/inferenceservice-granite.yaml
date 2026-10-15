@@ -1,0 +1,26 @@
+apiVersion: serving.kserve.io/v1beta1
+kind: InferenceService
+metadata:
+  name: granite-3-8b-instruct
+  namespace: llm-hosting
+  annotations:
+    openshift.io/display-name: "IBM Granite 3.0 8B Instruct"
+    serving.kserve.io/deploymentMode: "RawDeployment"
+spec:
+  predictor:
+    maxReplicas: 2
+    minReplicas: 1
+    model:
+      modelFormat:
+        name: vLLM
+      runtime: vllm-cuda-runtime
+      storageUri: "s3://models/granite-3.0-8b-instruct"
+    resources:
+      limits:
+        cpu: "8"
+        memory: 32Gi
+        nvidia.com/gpu: "1"
+      requests:
+        cpu: "4"
+        memory: 16Gi
+        nvidia.com/gpu: "1"
